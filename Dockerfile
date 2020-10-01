@@ -14,4 +14,4 @@ ENV FLASK_APP=run.py
 
 RUN poetry install
 
-CMD ["poetry", "run", "flask", "run"]
+CMD ["poetry", "run", "flask", "run", "--host=0.0.0.0"]
