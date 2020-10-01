@@ -13,6 +13,7 @@ def challenge():
         return jsonify({'challenge': req_json.get('challenge')})
     return jsonify({'challenge': ''})
 
-@app.route('/invite-handler/invite', methods=['POST'])
+@app.route('/invite-handler/', methods=['POST'])
 def invite():
-    pass
+    req_json = request.get_json()
+    print(f'Recieved {req_json}')
