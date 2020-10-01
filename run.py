@@ -2,6 +2,10 @@ from flask import Flask, jsonify, request
 import requests
 app = Flask(__name__)
 
+@app.route('/_monitor', methods=['GET'])
+def monitor():
+    return 'APPLICATION_STATUS: OK'
+
 @app.route('/challenge', methods=['POST'])
 def challenge():
     req_json = request.get_json()
