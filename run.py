@@ -2,17 +2,17 @@ from flask import Flask, jsonify, request
 import requests
 app = Flask(__name__)
 
-@app.route('/_monitor', methods=['GET'])
+@app.route('/invite-handler/_monitor', methods=['GET'])
 def monitor():
     return 'APPLICATION_STATUS: OK'
 
-@app.route('/challenge', methods=['POST'])
+@app.route('/invite-handler/challenge', methods=['POST'])
 def challenge():
     req_json = request.get_json()
     if req_json and req_json.get('challenge'):
         return jsonify({'challenge': req_json.get('challenge')})
     return jsonify({'challenge': ''})
 
-@app.route('/invite', methods=['POST'])
+@app.route('/invite-handler/invite', methods=['POST'])
 def invite():
     pass
