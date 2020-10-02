@@ -1,3 +1,6 @@
+__author__ = 'tinglev@kth.se'
+
+import json
 from flask import Flask, jsonify, request
 import requests
 app = Flask(__name__)
@@ -11,9 +14,11 @@ def challenge():
     req_json = request.get_json()
     if req_json and req_json.get('challenge'):
         return jsonify({'challenge': req_json.get('challenge')})
+    elif req_json:
+        print(f'Recieved {json.dumps(req_json)}')
     return jsonify({'challenge': ''})
 
 @app.route('/invite-handler/', methods=['POST'])
 def invite():
     req_json = request.get_json()
-    print(f'Recieved {req_json}')
+    print(f'Recieved {json.dumps(req_json)}')
