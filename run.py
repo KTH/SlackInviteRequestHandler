@@ -13,8 +13,9 @@ def monitor():
 @app.route('/invite-handler/event', methods=['POST'])
 def challenge():
     logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
     req_json = request.get_json()
-    logger.info('Got json: %s', json.dumps(req_json))
+    logger.debug('Got json: %s', json.dumps(req_json))
     if req_json and req_json.get('challenge'):
         return jsonify({'challenge': req_json.get('challenge')})
     return jsonify({'challenge': ''})
