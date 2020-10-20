@@ -80,7 +80,7 @@ def send_email(email):
     msg['From'] = sender
     try:
         # Remove this after testing
-        if (email == 'jfridell@kth.se'):
+        if (email == 'u1x7uslm@kth.se'):
             conn.sendmail(sender, email, msg.as_string())
     finally:
         conn.quit()
