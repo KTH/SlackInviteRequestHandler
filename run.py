@@ -56,6 +56,7 @@ def handle_invite_request(req_json, logger):
                     logger.debug('Matched member_regex')
                     member_type = member_regex_result.group(2)
             logger.info('Got name, email, member: %s, %s, %s', name, email, member_type)
+            send_email(email)
             return
     logger.info('Got message that had no event or event -> text')
     return
@@ -76,7 +77,7 @@ def send_email(email):
     conn.login(smtp_user, smtp_password)
     msg = MIMEText(email_text, 'plain')
     sender = 'noreply@kth.se'
-    msg['Subject'] = 'Slackinbjudan'
+    msg['Subject'] = 'Slackinbjudan/Slack invite'
     msg['From'] = sender
     try:
         # Remove this after testing
