@@ -3,6 +3,7 @@ __author__ = 'tinglev@kth.se'
 import json
 import re
 import os
+import ssl
 import logging
 from smtplib import SMTP_SSL as SMTP
 from email.mime.text import MIMEText
@@ -73,7 +74,8 @@ def send_email(email):
     """
     smtp_user = str(os.environ.get('SMTP_USER'))
     smtp_password = str(os.environ.get('SMTP_PASSWORD'))
-    conn = SMTP(host=str(os.environ.get('SMTP_HOST')))
+    conn = SMTP(host=str(os.environ.get('SMTP_HOST')), port=587)
+    conn.starttls(context=ssl.create_default_context())
     conn.login(smtp_user, smtp_password)
     msg = MIMEText(email_text, 'plain')
     sender = 'noreply@kth.se'
