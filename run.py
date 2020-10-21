@@ -75,7 +75,9 @@ def send_email(email):
     smtp_user = str(os.environ.get('SMTP_USER'))
     smtp_password = str(os.environ.get('SMTP_PASSWORD'))
     conn = SMTP(host=str(os.environ.get('SMTP_HOST')), port=587)
-    conn.starttls(context=ssl.create_default_context())
+    ctx = ssl.create_default_context()
+    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+    conn.starttls(context=ctx)
     conn.login(smtp_user, smtp_password)
     msg = MIMEText(email_text, 'plain')
     sender = 'noreply@kth.se'
