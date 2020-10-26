@@ -5,7 +5,7 @@ import re
 import os
 import ssl
 import logging
-from smtplib import SMTP_SSL as SMTP
+from smtplib import SMTP as SMTP
 from email.mime.text import MIMEText
 from flask import Flask, jsonify, request
 import requests
@@ -24,10 +24,11 @@ def challenge():
     if req_json and req_json.get('challenge'):
         return jsonify({'challenge': req_json.get('challenge')})
     elif req_json:
-        handle_invite_request(req_json, logger)
+        handle_invite_request(req_json)
     return jsonify({'challenge': ''})
 
-def handle_invite_request(req_json, logger):
+def handle_invite_request(req_json):
+    logger = logging.getLogger(__name__)
     name, email, member_type = None, None, None
     name_email_regex = re.compile(r'\*Name\*: (.+)\*Email\*: <mailto:(.+)\|(.+)>')
     member_regex = re.compile(r'\*Account type\*: <(.+)\|(.+)>')
@@ -74,18 +75,15 @@ def send_email(email):
     """
     smtp_user = str(os.environ.get('SMTP_USER'))
     smtp_password = str(os.environ.get('SMTP_PASSWORD'))
-    conn = SMTP(host=str(os.environ.get('SMTP_HOST')), port=587)
-    ctx = ssl.create_default_context()
-    ctx.minimum_version = ssl.TLSVersion.TLSv1_2
-    conn.starttls(context=ctx)
-    conn.login(smtp_user, smtp_password)
-    msg = MIMEText(email_text, 'plain')
-    sender = 'noreply@kth.se'
-    msg['Subject'] = 'Slackinbjudan/Slack invite'
-    msg['From'] = sender
-    try:
+    with SMTP(host=str(os.environ.get('SMTP_HOST')), port=587) as conn:
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        ctx.load_default_certs()
+        conn.starttls(context=ctx)
+        conn.login(smtp_user, smtp_password)
+        msg = MIMEText(email_text, 'plain')
+        sender = 'noreply@kth.se'
+        msg['Subject'] = 'Slackinbjudan/Slack invite'
+        msg['From'] = sender
         # Remove this after testing
         if (email == 'u1x7uslm@kth.se'):
             conn.sendmail(sender, email, msg.as_string())
-    finally:
-        conn.quit()

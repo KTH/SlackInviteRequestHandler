@@ -9,6 +9,8 @@ license = "MIT"
 python = "^3.7"
 flask = "^1.1"
 requests = "^2.24"
+green = "^3.2.3"
+mock = "^4.0.2"
 
 [tool.poetry.dev-dependencies]
 
