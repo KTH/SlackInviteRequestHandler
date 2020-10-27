@@ -24,8 +24,25 @@ def challenge():
     if req_json and req_json.get('challenge'):
         return jsonify({'challenge': req_json.get('challenge')})
     elif req_json:
-        handle_invite_request(req_json)
+        mail_sent = handle_invite_request(req_json)
+        if mail_sent:
+            send_slack_message()
     return jsonify({'challenge': ''})
+
+def send_slack_message():
+    token = os.environ.get('SLACK_TOKEN')
+    response = requests.post(
+        'https://slack.com/api/chat.postMessage',
+        headers={
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': f'Bearer {token}'
+        },
+        json={
+            "channel": "#user-invitation-requests",
+            "text": "I sent a mail for this request"
+        }
+    )
+    print(json.dumps(response.json()))
 
 def handle_invite_request(req_json):
     logger = logging.getLogger(__name__)
@@ -36,10 +53,10 @@ def handle_invite_request(req_json):
         event = req_json['event']
         if 'requested to invite' not in event['text']:
             logger.info('Got message that wasnt invite request - skipping')
-            return
+            return False
         elif 'attachments' not in event:
             logger.info('Got message without attachments - skipping')
-            return
+            return False
         else:
             attachments = event['attachments']
             for attachment in attachments:
@@ -59,9 +76,9 @@ def handle_invite_request(req_json):
                     member_type = member_regex_result.group(2)
             logger.info('Got name, email, member: %s, %s, %s', name, email, member_type)
             send_email(email)
-            return
+            return True
     logger.info('Got message that had no event or event -> text')
-    return
+    return False
 
 def send_email(email):
     email_text = """
