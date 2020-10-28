@@ -30,6 +30,7 @@ def challenge():
     return jsonify({'challenge': ''})
 
 def send_slack_message():
+    logger = logging.getLogger(__name__)
     token = os.environ.get('SLACK_TOKEN')
     response = requests.post(
         'https://slack.com/api/chat.postMessage',
@@ -42,7 +43,7 @@ def send_slack_message():
             "text": "I sent a mail for this request"
         }
     )
-    print(json.dumps(response.json()))
+    logger.info('Response from Slack: %s', json.dumps(response.json()))
 
 def handle_invite_request(req_json):
     logger = logging.getLogger(__name__)
