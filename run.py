@@ -64,6 +64,7 @@ def handle_invite_request(req_json):
     logger = logging.getLogger(__name__)
     name, email, member_type = None, None, None
     name_email_regex = re.compile(r'\*Name\*: (.+)\*Email\*: <mailto:(.+)\|(.+)>')
+    email_only_regex = re.compile(r'\*Email\*: <mailto:(.+)\|(.+)>')
     member_regex = re.compile(r'\*Account type\*: <(.+)\|(.+)>')
     slack_user_regex = re.compile(r'<@(.+)> requested to invite')
     if 'event' in req_json and 'text' in req_json['event']:
@@ -85,6 +86,7 @@ def handle_invite_request(req_json):
                 logger.debug('Text is %s', text)
                 name_regex_result = name_email_regex.match(text)
                 member_regex_result = member_regex.match(text)
+                email_regex_result = email_only_regex.match(text)
                 if name_regex_result:
                     logger.debug('Matched name_regex')
                     name = name_regex_result.group(1)
@@ -92,8 +94,12 @@ def handle_invite_request(req_json):
                 elif member_regex_result:
                     logger.debug('Matched member_regex')
                     member_type = member_regex_result.group(2)
+                elif email_regex_result:
+                    logger.debug('Matched email_regex')
+                    email = email_regex_result.group(1)
             logger.info('Got name, email, member: %s, %s, %s', name, email, member_type)
-            send_email(email)
+            if email is not None:
+                send_email(email)
             return {
                 'name': name,
                 'email': email,
